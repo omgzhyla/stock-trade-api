@@ -5,8 +5,8 @@
   "main": "build/index.js",
   "scripts": {
     "test": "echo \"No tests implemented yet\" && exit 1",
-    "lint": "eslint $(git diff --name-only HEAD | grep -E '\\.(js|jsx)$' | xargs)",
-    "lint-fix": "eslint $(git diff --name-only HEAD | grep -E '\\.(js|jsx)$' | xargs) --fix",
+    "lint": "eslint $(git diff --name-only HEAD | grep -E '\\.(ts|tsx)$' | xargs)",
+    "lint-fix": "eslint $(git diff --name-only HEAD | grep -E '\\.(ts|tsx)$' | xargs) --fix",
     "prepare": "husky install"
   },
   "keywords": [
