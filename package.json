@@ -4,7 +4,10 @@
   "description": "Test assigment for Condo",
   "main": "build/index.js",
   "scripts": {
-    "test": "echo \"No tests implemented yet\" && exit 1"
+    "test": "echo \"No tests implemented yet\" && exit 1",
+    "lint": "eslint $(git diff --name-only HEAD | grep -E '\\.(js|jsx)$' | xargs)",
+    "lint-fix": "eslint $(git diff --name-only HEAD | grep -E '\\.(js|jsx)$' | xargs) --fix",
+    "prepare": "husky install"
   },
   "keywords": [
     "fastify",
@@ -17,7 +20,14 @@
     "@types/node": "^18.0.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.30.0",
+    "@typescript-eslint/parser": "^5.30.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.1",
     "nodemon": "^2.0.18",
+    "prettier": "^2.7.1",
+    "prettier-eslint": "^15.0.1",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.4"
   }
