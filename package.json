@@ -21,7 +21,10 @@
     "@types/pino": "^7.0.5",
     "fastify": "^4.2.0",
     "fastify-env": "^2.2.0",
-    "fastify-plugin": "^3.0.1"
+    "fastify-plugin": "^3.0.1",
+    "knex": "^2.1.0",
+    "objection": "^3.0.1",
+    "pg": "^8.7.3"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.30.0",
