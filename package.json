@@ -4,6 +4,7 @@
   "description": "Test assigment for Condo",
   "main": "build/index.js",
   "scripts": {
+    "start:dev": "nodemon -w src -e ts --exec ts-node src/index.ts",
     "test": "echo \"No tests implemented yet\" && exit 1",
     "lint": "eslint $(git diff --name-only HEAD | grep -E '\\.(ts|tsx)$' | xargs)",
     "lint-fix": "eslint $(git diff --name-only HEAD | grep -E '\\.(ts|tsx)$' | xargs) --fix",
@@ -17,6 +18,7 @@
   "author": "Pavlo Zhyla",
   "license": "ISC",
   "dependencies": {
+    "@fastify/awilix": "^3.0.0",
     "@types/node": "^18.0.0",
     "@types/pino": "^7.0.5",
     "fastify": "^4.2.0",
