@@ -2,9 +2,10 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: './tsconfig.json',
-    jsx: false 
+    jsx: false
   },
-  rules: { 
+  rules: {
+    "no-unused-vars": ["error", {"args": "all", "argsIgnorePattern": "^_"}]
   },
   extends: [
     'plugin:@typescript-eslint/recommended',

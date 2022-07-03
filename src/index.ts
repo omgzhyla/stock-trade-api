@@ -1,5 +1,3 @@
-import { Server } from "./server";
+import { di } from "./di";
 
-const server = new Server();
-
-server.start();
+di().resolve("server").start();
