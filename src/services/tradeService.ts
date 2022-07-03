@@ -4,12 +4,9 @@ import { IUserRepository, User } from "../repositories/userRepository";
 export type TradePayload = Omit<Trade, "user_id>"> & { user: User };
 
 export interface ITradeService {
-  // deleteAllTrades(_req: Request, _res: Response): void;
-  // getDeleteAllTradesRouteOptions(): RouteOptions;
   addNew(_trade: TradePayload): void;
-  // getTrades(_req: Request, _res: Response): void;
-  // getStocks(_req: Request, _res: Response): void;
-  // getStockStats(_req: Request, _res: Response): void;
+  eraseAll(): void;
+  getAll(): Promise<Array<Trade>>;
 }
 
 export class TradeService implements ITradeService {
@@ -25,7 +22,6 @@ export class TradeService implements ITradeService {
     this.tradeRepository = tradeRepository;
     this.userRepository = userRepository;
   }
-
   async addNew(tradePayload: TradePayload) {
     const { user, ...tradeFields } = tradePayload;
     const existingUser = await this.userRepository.createIfNotExists(user);
@@ -33,6 +29,13 @@ export class TradeService implements ITradeService {
       tradeFields.userId = existingUser.id;
       await this.tradeRepository.create(tradeFields);
     }
+  }
+  async eraseAll() {
+    await this.tradeRepository.truncate();
+    await this.userRepository.truncate();
+  }
+  getAll(): Promise<Array<Trade>> {
+    return this.tradeRepository.getAll();
   }
   async get(id: number): Promise<Trade> {
     return this.tradeRepository.get(id);

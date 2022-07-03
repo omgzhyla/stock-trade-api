@@ -1,25 +1,9 @@
 import { Trade } from "../repositories/tradeRepository";
 import { User } from "../repositories/userRepository";
-// import { FastifyReply, FastifyRequest, RouteOptions } from "fastify";
 import { RouteOptions } from "fastify";
 import { ITradeService } from "../services/tradeService";
 
 export type TradePayload = Omit<Trade, "user_id>"> & { user: User };
-// type Request = FastifyRequest;
-// type Reply = FastifyReply;
-// type AddTradeRequest = FastifyRequest<{
-//   Body: TradePayload;
-// }>;
-
-export interface ITradeRoutes {
-  // deleteAllTrades(_req: Request, _res: Response): void;
-  // getDeleteAllTradesRouteOptions(): RouteOptions;
-  getAddNewRouteOptions(): RouteOptions;
-  // addNew(_req: Request, _res: Response): void;
-  // getTrades(_req: Request, _res: Response): void;
-  // getStocks(_req: Request, _res: Response): void;
-  // getStockStats(_req: Request, _res: Response): void;
-}
 
 export interface IRoutesProvider {
   get(): Array<RouteOptions>;
@@ -31,10 +15,13 @@ export class TradeRoutes implements IRoutesProvider {
     this.tradeService = tradeService;
   }
   get(): Array<RouteOptions> {
-    return [this.getAddNewRouteOptions()];
+    return [
+      this.addNewRouteOptions(),
+      this.eraseAllTradesRouteOptions(),
+      this.getAllTradesRouteOptions(),
+    ];
   }
-
-  getAddNewRouteOptions(): RouteOptions {
+  private addNewRouteOptions(): RouteOptions {
     return {
       method: "POST",
       url: "/trades",
@@ -93,6 +80,26 @@ export class TradeRoutes implements IRoutesProvider {
             "timestamp",
           ],
         },
+      },
+    };
+  }
+  private eraseAllTradesRouteOptions(): RouteOptions {
+    return {
+      method: "DELETE",
+      url: "/trades",
+      handler: async (_request, reply) => {
+        await this.tradeService.eraseAll();
+        reply.code(200).send();
+      },
+    };
+  }
+  private getAllTradesRouteOptions(): RouteOptions {
+    return {
+      method: "GET",
+      url: "/trades",
+      handler: async (_request, reply) => {
+        reply.code(200);
+        return this.tradeService.getAll();
       },
     };
   }
