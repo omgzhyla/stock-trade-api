@@ -14,7 +14,7 @@ import { errorHandler } from "./errors";
 // }>;
 
 export class Server {
-  private server: FastifyInstance;
+  readonly instance: FastifyInstance;
   private config;
   private tradeRoutes;
 
@@ -27,18 +27,46 @@ export class Server {
   }) {
     this.config = config;
     this.tradeRoutes = tradeRoutes;
-    this.server = fastify({
+    this.instance = fastify({
       logger: config.logger,
       schemaController: {
         compilersFactory: {
           buildValidator: adjCompiler(),
         },
       },
+      ajv: {
+        customOptions: {
+          formats: {
+            customDateTime: {
+              validate: (data: string): boolean => {
+                return (
+                  /^\d{4}-(?:0|1)\d-\d{2} \d{2}:\d{2}:\d{2}$/.test(data) &&
+                  !!Date.parse(data)
+                );
+              },
+              compare: (_data1: string, _data2: string): number => {
+                return 0;
+              },
+              async: false,
+            },
+            price: {
+              validate: (data: number): boolean => {
+                return /^\d{1,5}\.\d{2}$/.test(data.toString());
+              },
+              compare: (data1: number, data2: number): number => {
+                return data1 == data2 ? 0 : data1 > data2 ? 1 : -1;
+              },
+              async: false,
+              type: "number",
+            },
+          },
+        },
+      },
     });
   }
 
   private async configure() {
-    await this.server.register(fastifyAwilixPlugin, {
+    await this.instance.register(fastifyAwilixPlugin, {
       disposeOnClose: false,
       disposeOnResponse: false,
     });
@@ -50,7 +78,7 @@ export class Server {
         ...options,
         errorHandler: this.errorHandler.bind(this),
       };
-      await this.server.route(patchedOptions);
+      await this.instance.route(patchedOptions);
     }
   }
 
@@ -59,8 +87,9 @@ export class Server {
     _request: FastifyRequest,
     reply: FastifyReply
   ) {
+    console.log("Error: ", error);
     const replyData = errorHandler(error);
-    this.server.log.error(
+    this.instance.log.error(
       !!replyData.logMessage ? replyData.logMessage : replyData.message
     );
     reply.status(replyData.code).send(replyData.message);
@@ -76,14 +105,15 @@ export class Server {
   //   });
   // }
 
-  async start() {
+  async start(): Promise<FastifyInstance | undefined> {
     await this.configure();
     await this.setupRoutes();
     // this.setupErrorHandler();
     try {
-      await this.server.listen({ port: this.config?.port });
+      await this.instance.listen({ port: this.config?.port });
+      return this.instance;
     } catch (e) {
-      this.server.log.error(e);
+      this.instance.log.error(e);
     }
   }
 }

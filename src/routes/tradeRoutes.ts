@@ -63,11 +63,13 @@ export class TradeRoutes implements IRoutesProvider {
             },
             price: {
               type: "number",
+              format: "price",
               minimum: 130.42,
               maximum: 195.65,
             },
             timestamp: {
               type: "string",
+              format: "customDateTime",
             },
           },
           required: [

@@ -8,7 +8,7 @@ export type Trade = {
   id: number;
   type: TradeType;
   userId: number;
-  stockSymbol: string;
+  symbol: string;
   shares: number;
   price: number;
   timestamp: Date;

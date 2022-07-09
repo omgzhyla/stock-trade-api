@@ -8,9 +8,9 @@ export const TradeMapper = (tradeModel: TradeModel): Trade => {
     id: untypedTrade.id,
     type: untypedTrade.type,
     userId: untypedTrade.userId,
-    stockSymbol: untypedTrade.stockSymbol,
-    shares: untypedTrade.stockSymbol,
+    symbol: untypedTrade.symbol,
+    shares: untypedTrade.shares,
     price: untypedTrade.price,
-    timestamp: new Date(untypedTrade.ts),
+    timestamp: new Date(untypedTrade.timestamp),
   };
 };
