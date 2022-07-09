@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "start:dev": "nodemon -w src -e ts --exec ts-node src/index.ts",
-    "test": "echo \"No tests implemented yet\" && exit 1",
+    "test": "NODE_ENV=test jest test --verbose --collect-coverage",
     "lint": "eslint $(git diff --name-only HEAD | grep -E '\\.(ts|tsx)$' | xargs)",
     "lint-fix": "eslint $(git diff --name-only HEAD | grep -E '\\.(ts|tsx)$' | xargs) --fix",
     "prepare": "husky install"
