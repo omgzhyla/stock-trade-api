@@ -7,12 +7,12 @@ export class TradeModel extends Model {
   }
 
   static relationMappings = {
-    user: {
+    users: {
       relation: Model.HasOneRelation,
       modelClass: UserModel,
       join: {
-        from: `trades.user_id`,
-        to: `user.id`,
+        from: `${TradeModel.tableName}.user_id`,
+        to: `${UserModel.tableName}.id`,
       },
     },
   };
