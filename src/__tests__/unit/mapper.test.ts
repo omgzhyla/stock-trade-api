@@ -1,13 +1,13 @@
-import { Trade } from "../../repositories/tradeRepository";
+import { TradeDTO } from "../../repositories/tradeRepository";
 import { TradeModel } from "../../db/models/tradeModel";
 import { TradeMapper } from "../../mappers/tradeMapper";
-import { User } from "../../repositories/userRepository";
+import { UserDTO } from "../../repositories/userRepository";
 import { UserModel } from "../../db/models/userModel";
 import { UserMapper } from "../../mappers/userMapper";
 
 describe("TradeMapper and UserMapper", () => {
   it("maps Trade from DTO to model and back", async () => {
-    const tradeDTO: Trade = {
+    const tradeDTO: TradeDTO = {
       id: 1,
       type: "buy",
       userId: 1,
@@ -20,7 +20,7 @@ describe("TradeMapper and UserMapper", () => {
     expect(tradeDTO).toEqual(TradeMapper(tradeModel));
   });
   it("maps User from DTO to model and back", async () => {
-    const userDTO: User = {
+    const userDTO: UserDTO = {
       id: 1,
       name: "David",
     };

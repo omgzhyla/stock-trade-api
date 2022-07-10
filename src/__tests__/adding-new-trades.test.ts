@@ -2,7 +2,7 @@ import { di } from "./di";
 import { FastifyInstance } from "fastify";
 import { validTradePayload } from "./payload";
 
-describe("Fastify schema validation", () => {
+describe("Adding new trades", () => {
   let instancePromise: Promise<FastifyInstance | undefined>;
   beforeAll(() => {
     instancePromise = di().resolve("server").start();

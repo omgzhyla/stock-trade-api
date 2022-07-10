@@ -1,13 +1,19 @@
 import { diContainer } from "@fastify/awilix";
-import { asClass, asValue } from "awilix";
+import { asClass, asFunction, asValue } from "awilix";
 
 import config from "../config";
 import { ITradeService, TradeService } from "../services/tradeService";
-import { ITradeRepository, Trade } from "../repositories/tradeRepository";
+import {
+  ITradeRepository,
+  TradeDTO,
+  TradeWithUserDTO,
+} from "../repositories/tradeRepository";
 import { IRoutesProvider, TradeRoutes } from "../routes/tradeRoutes";
-import { IUserRepository, User } from "../repositories/userRepository";
+import { IUserRepository, UserDTO } from "../repositories/userRepository";
 import { Server } from "../server";
 import { NotFoundError } from "objection";
+import { TradeWithUserMapper } from "../mappers/tradeWithUserMapper";
+import { TradeModel } from "../db/models/tradeModel";
 
 /* eslint-disable no-unused-vars */
 declare module "@fastify/awilix" {
@@ -22,49 +28,52 @@ declare module "@fastify/awilix" {
 }
 /* eslint-enable no-unused-vars */
 
-class TradeRepository implements ITradeRepository {
-  trades: Map<number, Trade>;
-  userRepository: IUserRepository;
-  constructor({ userRepository }: { userRepository: IUserRepository }) {
-    this.userRepository = userRepository;
-    this.trades = new Map<number, Trade>();
-  }
-  create(trade: Trade): Promise<boolean> {
-    this.trades.set(trade.id, trade);
+const trades = new Map<number, TradeDTO>();
+
+const TradeRepository: ITradeRepository = {
+  create: jest.fn((trade: TradeDTO): Promise<boolean> => {
+    trades.set(trade.id, trade);
     return Promise.resolve(true);
-  }
-  get(id: number): Promise<Trade> {
-    const trade = this.trades.get(id);
+  }),
+  get: jest.fn((id: number): Promise<TradeDTO> => {
+    const trade = trades.get(id);
     if (!!trade) {
       throw new NotFoundError({ statusCode: 404 });
     }
     return Promise.resolve(trade!);
-  }
-  getAll(_cursor?: number): Promise<Array<Trade>> {
-    return Promise.resolve([...this.trades.values()]);
-  }
-  truncate(): Promise<void> {
-    this.trades.clear();
+  }),
+  getAll: jest.fn((): Promise<TradeWithUserDTO[]> => {
+    return Promise.resolve(
+      [...trades.values()].map((trade) => {
+        return TradeWithUserMapper({
+          ...trade,
+          userId: 1,
+          name: "Test",
+        } as unknown as TradeModel);
+      })
+    );
+  }),
+  truncate: jest.fn((): Promise<void> => {
+    trades.clear();
     return Promise.resolve(undefined);
-  }
-}
+  }),
+};
 
-class UserRepository implements IUserRepository {
-  users: Map<number, User>;
-  constructor() {
-    this.users = new Map<number, User>();
-  }
-  createIfNotExists(user: User): Promise<User | null> {
-    this.users.set(user.id, user);
+const users = new Map<number, UserDTO>();
+
+const UserRepository: IUserRepository = {
+  createIfNotExists: jest.fn((user: UserDTO): Promise<UserDTO | null> => {
+    users.set(user.id, user);
     return Promise.resolve(user);
-  }
-  get(id: number): Promise<User | null> {
-    return Promise.resolve(this.users.get(id) || null);
-  }
-  truncate(): Promise<void> {
+  }),
+  get: jest.fn((id: number): Promise<UserDTO | null> => {
+    return Promise.resolve(users.get(id) || null);
+  }),
+  truncate: jest.fn((): Promise<void> => {
     return Promise.resolve(undefined);
-  }
-}
+  }),
+  getAll: jest.fn((): Promise<UserDTO[]> => Promise.resolve([])),
+};
 
 export function di() {
   return diContainer.register({
@@ -72,7 +81,11 @@ export function di() {
     server: asClass(Server).singleton().proxy(),
     tradeRoutes: asClass(TradeRoutes).singleton().proxy(),
     tradeService: asClass(TradeService).singleton().proxy(),
-    tradeRepository: asClass(TradeRepository).singleton().proxy(),
-    userRepository: asClass(UserRepository).singleton().proxy(),
+    tradeRepository: asFunction(() => TradeRepository)
+      .singleton()
+      .proxy(),
+    userRepository: asFunction(() => UserRepository)
+      .singleton()
+      .proxy(),
   });
 }
