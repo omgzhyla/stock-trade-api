@@ -1,7 +1,7 @@
 import { UserModel } from "../db/models/userModel";
-import { User } from "../repositories/userRepository";
+import { UserDTO } from "../repositories/userRepository";
 
-export const UserMapper = (userModel: UserModel): User => {
+export const UserMapper = (userModel: UserModel): UserDTO => {
   const untypedUser = userModel as any;
   return {
     id: untypedUser.id,

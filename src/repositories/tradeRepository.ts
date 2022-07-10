@@ -1,10 +1,14 @@
 import { TradeModel } from "../db/models/tradeModel";
 import { TradeMapper } from "../mappers/tradeMapper";
+import { UserDTO } from "./userRepository";
+import { UserModel } from "../db/models/userModel";
+import { TradeWithUserMapper } from "../mappers/tradeWithUserMapper";
+import { QueryBuilder } from "objection";
 // import { ForeignKeyViolationError } from "objection";
 
 export type TradeType = "buy" | "sell";
 
-export type Trade = {
+export type TradeDTO = {
   id: number;
   type: TradeType;
   userId: number;
@@ -14,28 +18,35 @@ export type Trade = {
   timestamp: Date;
 };
 
+export type TradeWithUserDTO = Omit<TradeDTO, "user_id>"> & { user: UserDTO };
+
 export interface ITradeRepository {
-  create(_trade: Trade): Promise<boolean>;
+  create(_trade: TradeDTO): Promise<boolean>;
   truncate(): Promise<void>;
-  getAll(_cursor?: number): Promise<Array<Trade>>;
-  get(_id: number): Promise<Trade>;
+  getAll(): Promise<TradeWithUserDTO[]>;
+  get(_id: number): Promise<TradeDTO>;
 }
 
 export class TradeRepository implements ITradeRepository {
-  async getAll(_cursor?: number): Promise<Array<Trade>> {
-    const tradeModels: Array<TradeModel> = await TradeModel.query().orderBy(
-      TradeModel.idColumn as string
-    );
-    return tradeModels.map((row) => TradeMapper(row));
+  private _buildQuery(): QueryBuilder<TradeModel> {
+    return TradeModel.query()
+      .select(`${TradeModel.tableName}.*`)
+      .select(`${UserModel.tableName}.name`)
+      .joinRelated({ users: true })
+      .orderBy(`${TradeModel.tableName}.${TradeModel.idColumn}`);
   }
-  async create(trade: Trade) {
+  async getAll(): Promise<TradeWithUserDTO[]> {
+    const tradesWithUsers = await this._buildQuery();
+    return tradesWithUsers.map((row) => TradeWithUserMapper(row));
+  }
+  async create(trade: TradeDTO) {
     await TradeModel.query().insert({ ...trade });
     return true;
   }
   async truncate(): Promise<void> {
     await TradeModel.query().truncate();
   }
-  async get(id: number): Promise<Trade> {
+  async get(id: number): Promise<TradeDTO> {
     const result = await TradeModel.query().findById(id).throwIfNotFound();
     return TradeMapper(result);
   }

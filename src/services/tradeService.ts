@@ -1,12 +1,19 @@
-import { Trade, ITradeRepository } from "../repositories/tradeRepository";
-import { IUserRepository, User } from "../repositories/userRepository";
+import { TradeDTO, ITradeRepository } from "../repositories/tradeRepository";
+import { IUserRepository, UserDTO } from "../repositories/userRepository";
+import { TradePayloadMapper } from "../mappers/tradePayloadMapper";
+import { TradeResponseMapper } from "../mappers/tradeResponseMapper";
 
-export type TradePayload = Omit<Trade, "user_id>"> & { user: User };
+export type TradePayloadDTO = Omit<TradeDTO, "user_id" | "timestamp"> & {
+  user: UserDTO;
+} & {
+  timestamp: string;
+};
+export type TradeResponseDTO = TradePayloadDTO;
 
 export interface ITradeService {
-  addNew(_trade: TradePayload): void;
+  addNew(_trade: TradePayloadDTO): void;
   eraseAll(): void;
-  getAll(): Promise<Array<Trade>>;
+  getAll(): Promise<TradeResponseDTO[]>;
 }
 
 export class TradeService implements ITradeService {
@@ -22,8 +29,8 @@ export class TradeService implements ITradeService {
     this.tradeRepository = tradeRepository;
     this.userRepository = userRepository;
   }
-  async addNew(tradePayload: TradePayload) {
-    const { user, ...tradeFields } = tradePayload;
+  async addNew(tradePayload: TradePayloadDTO) {
+    const { user, ...tradeFields } = TradePayloadMapper(tradePayload);
     const existingUser = await this.userRepository.createIfNotExists(user);
     if (existingUser) {
       tradeFields.userId = existingUser.id;
@@ -34,10 +41,13 @@ export class TradeService implements ITradeService {
     await this.tradeRepository.truncate();
     await this.userRepository.truncate();
   }
-  getAll(): Promise<Array<Trade>> {
-    return this.tradeRepository.getAll();
+  async getAll(): Promise<TradeResponseDTO[]> {
+    const tradesWithUser = await this.tradeRepository.getAll();
+    return tradesWithUser.map((tradeWithUser) =>
+      TradeResponseMapper(tradeWithUser)
+    );
   }
-  async get(id: number): Promise<Trade> {
+  async get(id: number): Promise<TradeDTO> {
     return this.tradeRepository.get(id);
   }
 }

@@ -1,9 +1,5 @@
-import { Trade } from "../repositories/tradeRepository";
-import { User } from "../repositories/userRepository";
 import { RouteOptions } from "fastify";
-import { ITradeService } from "../services/tradeService";
-
-export type TradePayload = Omit<Trade, "user_id>"> & { user: User };
+import { ITradeService, TradePayloadDTO } from "../services/tradeService";
 
 export interface IRoutesProvider {
   get(): Array<RouteOptions>;
@@ -26,8 +22,10 @@ export class TradeRoutes implements IRoutesProvider {
       method: "POST",
       url: "/trades",
       handler: async (request, reply) => {
-        const tradePayload = request.body as unknown as TradePayload;
-        await this.tradeService.addNew(tradePayload as unknown as TradePayload);
+        const tradePayload = request.body;
+        await this.tradeService.addNew(
+          tradePayload as unknown as TradePayloadDTO
+        );
         reply.code(201).send();
       },
       schema: {
