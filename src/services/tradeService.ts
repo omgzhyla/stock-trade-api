@@ -120,7 +120,7 @@ export class TradeService implements ITradeService {
   ): Promise<StockStatsResponseDTO> {
     const stocks = await this.tradeRepository.getStocks();
     return Promise.all(
-      stocks.map(async (stockSymbol): Promise<StockStatsDTO | NoTradesDTO > => {
+      stocks.map(async (stockSymbol): Promise<StockStatsDTO | NoTradesDTO> => {
         const prices = await this.tradeRepository.getStockPricesForPeriod(
           stockSymbol,
           start,

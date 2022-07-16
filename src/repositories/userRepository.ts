@@ -1,5 +1,4 @@
 import { UserMapper } from "../mappers/userMapper";
-// import { ForeignKeyViolationError } from "objection";
 import { UserModel } from "../db/models/userModel";
 import { TradeModel } from "../db/models/tradeModel";
 

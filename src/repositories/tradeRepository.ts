@@ -4,8 +4,6 @@ import { UserDTO } from "./userRepository";
 import { UserModel } from "../db/models/userModel";
 import { TradeWithUserMapper } from "../mappers/tradeWithUserMapper";
 import { QueryBuilder } from "objection";
-import { StockStatsResponseDTO } from "../services/tradeService";
-// import { ForeignKeyViolationError } from "objection";
 
 export type TradeType = "buy" | "sell";
 

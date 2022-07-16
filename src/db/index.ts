@@ -20,4 +20,5 @@ export const getKnexConfig = (config: any) => ({
 export function initDb() {
   const db = knex(getKnexConfig(config));
   Model.knex(db);
+  return db;
 }

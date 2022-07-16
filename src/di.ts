@@ -13,25 +13,25 @@ import { IUserRepository, UserRepository } from "./repositories/userRepository";
 import { Server } from "./server";
 // eslint-disable-next-line no-unused-vars
 import { initDb } from "./db";
+import { Knex } from "knex";
 // import { Knex } from "knex";
 
 declare module "@fastify/awilix" {
   interface Cradle {
+    db: Knex;
     config: object;
     server: Server;
     tradeRoutes: IRoutesProvider;
     tradeService: ITradeService;
     userService: IUserService;
     tradeRepository: ITradeRepository;
-    // userService: IUserService;
     userRepository: IUserRepository;
   }
 }
 
-initDb();
-
 export function di() {
   return diContainer.register({
+    db: asValue(initDb()),
     config: asValue(config),
     server: asClass(Server).singleton().proxy(),
     tradeRoutes: asClass(TradeRoutes).singleton().proxy(),
