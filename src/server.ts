@@ -49,6 +49,17 @@ export class Server {
               },
               async: false,
             },
+            customDate: {
+              validate: (data: string): boolean => {
+                return (
+                  /^\d{4}-(?:0|1)\d-\d{2}$/.test(data) && !!Date.parse(data)
+                );
+              },
+              compare: (_data1: string, _data2: string): number => {
+                return 0;
+              },
+              async: false,
+            },
             price: {
               validate: (data: number): boolean => {
                 return /^\d{1,5}\.\d{2}$/.test(data.toString());
@@ -92,7 +103,7 @@ export class Server {
     this.instance.log.error(
       !!replyData.logMessage ? replyData.logMessage : replyData.message
     );
-    reply.status(replyData.code).send(replyData.message);
+    reply.status(replyData.code).send({ message: replyData.message });
   }
 
   // Doesn't work with fastify.route() for an unknown reason

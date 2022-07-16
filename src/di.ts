@@ -3,6 +3,7 @@ import { asClass, asValue } from "awilix";
 
 import config from "./config";
 import { ITradeService, TradeService } from "./services/tradeService";
+import { IUserService, UserService } from "./services/userService";
 import {
   ITradeRepository,
   TradeRepository,
@@ -20,6 +21,7 @@ declare module "@fastify/awilix" {
     server: Server;
     tradeRoutes: IRoutesProvider;
     tradeService: ITradeService;
+    userService: IUserService;
     tradeRepository: ITradeRepository;
     // userService: IUserService;
     userRepository: IUserRepository;
@@ -34,6 +36,7 @@ export function di() {
     server: asClass(Server).singleton().proxy(),
     tradeRoutes: asClass(TradeRoutes).singleton().proxy(),
     tradeService: asClass(TradeService).singleton().proxy(),
+    userService: asClass(UserService).singleton().proxy(),
     tradeRepository: asClass(TradeRepository).singleton().proxy(),
     userRepository: asClass(UserRepository).singleton().proxy(),
   });
