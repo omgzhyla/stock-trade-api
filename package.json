@@ -5,10 +5,12 @@
   "main": "build/index.js",
   "scripts": {
     "start:dev": "nodemon -w src -e ts --exec ts-node src/index.ts",
+    "start": "tsc && node build/index.js",
     "test": "NODE_ENV=test jest test --verbose --collect-coverage --runInBand",
-    "lint": "eslint $(git diff --name-only HEAD | grep -E '\\.(ts|tsx)$' | xargs)",
-    "lint-fix": "eslint $(git diff --name-only HEAD | grep -E '\\.(ts|tsx)$' | xargs) --fix",
-    "prepare": "husky install"
+    "lint": "eslint $(git diff --name-only --staged --diff-filter=d HEAD | grep -E '\\.(ts|tsx)$' | xargs)",
+    "lint-fix": "eslint $(git diff --name-only --staged --diff-filter=d HEAD | grep -E '\\.(ts|tsx)$' | xargs) --fix",
+    "prepare": "husky install",
+    "knex": "ts-node -r dotenv/config --project ./tsconfig.json $(npm bin)/knex --knexfile ./src/db/knexfile.ts"
   },
   "keywords": [
     "fastify",
