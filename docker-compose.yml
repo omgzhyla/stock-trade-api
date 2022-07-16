@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  stock-trades-db:
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sergtsop}
+      POSTGRES_DB: ${POSTGRES_DB:-trades}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    profiles:
+      - test
+      - run
+  stock-trades-api:
+    build: .
+    ports:
+      - "80:3000"
+    profiles:
+      - run
+volumes:
+  postgres:

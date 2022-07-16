@@ -1,12 +1,12 @@
 {
-  "name": "stock-api",
+  "name": "stock-trades-api",
   "version": "1.0.0",
-  "description": "Test assigment for Condo",
   "main": "build/index.js",
   "scripts": {
     "start:dev": "nodemon -w src -e ts --exec ts-node src/index.ts",
     "start": "tsc && node build/index.js",
-    "test": "NODE_ENV=test jest test --verbose --collect-coverage --runInBand",
+    "test:unit": "NODE_ENV=test jest test --collect-coverage --runInBand",
+    "test:api": "POSTGRES_DB=test docker-compose --profile test start && ./wait-for-it.sh localhost:5432 -t 60 -- npm run knex migrate:up && jest --detectOpenHandles --runInBand src/__tests__/api/",
     "lint": "eslint $(git diff --name-only --staged --diff-filter=d HEAD | grep -E '\\.(ts|tsx)$' | xargs)",
     "lint-fix": "eslint $(git diff --name-only --staged --diff-filter=d HEAD | grep -E '\\.(ts|tsx)$' | xargs) --fix",
     "prepare": "husky install",
