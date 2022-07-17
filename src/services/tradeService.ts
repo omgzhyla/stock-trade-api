@@ -4,7 +4,11 @@ import {
   ITradeRepository,
   IUserRepository,
 } from "../repositories";
-import { TradePayloadMapper, TradeResponseMapper } from "../mappers";
+import {
+  StartEndMapper,
+  TradePayloadMapper,
+  TradeResponseMapper,
+} from "../mappers";
 import { Money, Currencies } from "ts-money";
 
 export type TradePayloadDTO = Omit<TradeDTO, "user_id" | "timestamp"> & {
@@ -100,10 +104,11 @@ export class TradeService implements ITradeService {
     end: string
   ): Promise<StockPricesMinMaxDTO> {
     await this.tradeRepository.checkStockExists(stockSymbol);
+    const [adjStart, adjEnd] = StartEndMapper(start, end);
     const prices = await this.tradeRepository.getStockPricesForPeriod(
       stockSymbol,
-      start,
-      end
+      adjStart,
+      adjEnd
     );
     if (prices.length === 0) {
       throw new NoTradesInSelectedPeriod();
@@ -118,10 +123,11 @@ export class TradeService implements ITradeService {
     const stocks = await this.tradeRepository.getStocks();
     return Promise.all(
       stocks.map(async (stockSymbol): Promise<StockStatsDTO | NoTradesDTO> => {
+        const [adjStart, adjEnd] = StartEndMapper(start, end);
         const prices = await this.tradeRepository.getStockPricesForPeriod(
           stockSymbol,
-          start,
-          end
+          adjStart,
+          adjEnd
         );
         if (prices.length) {
           const stockStats = this.findFluctuations(prices);

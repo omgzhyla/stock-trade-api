@@ -4,7 +4,6 @@ import { UserDTO } from "./userRepository";
 import { UserModel } from "../db/models/userModel";
 import { TradeWithUserMapper } from "../mappers/tradeWithUserMapper";
 import { QueryBuilder } from "objection";
-import { addDays, addHours } from "date-fns";
 
 export type TradeType = "buy" | "sell";
 
@@ -84,16 +83,11 @@ export class TradeRepository implements ITradeRepository {
     start: string,
     end: string
   ): Promise<number[]> {
-    const [adjStart, adjEnd] = ((start, end) => {
-      return [
-        addHours(new Date(start), 4).toDateString(),
-        addDays(addHours(new Date(end), 4), 1).toDateString(),
-      ];
-    })(start, end);
-    const trades = await this.buildGetPricesQueryForPeriod(
-      adjStart,
-      adjEnd
-    ).where("symbol", "=", stockSymbol);
+    const trades = await this.buildGetPricesQueryForPeriod(start, end).where(
+      "symbol",
+      "=",
+      stockSymbol
+    );
 
     return [...trades].map((trade) => {
       const { price } = trade as any;
