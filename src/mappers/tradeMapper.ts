@@ -1,6 +1,5 @@
 import { TradeModel } from "../db/models/tradeModel";
 import { TradeDTO } from "../repositories/tradeRepository";
-// import { format, formatRFC3339 } from "date-fns";
 
 export const TradeMapper = (tradeModel: TradeModel): TradeDTO => {
   const untypedTrade = tradeModel as any;

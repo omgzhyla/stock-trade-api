@@ -8,7 +8,7 @@ import stockPrice from "../payload/stock-price.json";
 import stockStats from "../payload/stock-stats.json";
 import stockStats2 from "../payload/stock-stats-2.json";
 
-describe("Adding new trades", () => {
+describe("End-to-end test", () => {
   let instance: FastifyInstance | undefined;
   let diContainer: AwilixContainer<Cradle>;
   beforeAll(async () => {
@@ -20,8 +20,7 @@ describe("Adding new trades", () => {
     await diContainer.resolve("db").destroy();
     await instance!.close();
   });
-  test("creates new trades with valid payload", async () => {
-    expect.assertions(trades.length + 1);
+  test("create new trades with valid payload", async () => {
     for (const trade of trades) {
       const response = await instance!.inject({
         method: "POST",
@@ -31,15 +30,16 @@ describe("Adding new trades", () => {
       expect(response.statusCode).toEqual(201);
     }
   });
-  test("gets all trades", async () => {
-    expect.assertions(1);
+  test("get all trades", async () => {
+    expect.assertions(2);
     const response = await instance!.inject({
       method: "GET",
       url: "/trades",
     });
     expect(response.statusCode).toEqual(200);
+    expect(response.json().length).toEqual(trades.length);
   });
-  test("gets trades for user", async () => {
+  test("gets trades for the user", async () => {
     expect.assertions(2);
     const response = await instance!.inject({
       method: "GET",
@@ -75,7 +75,7 @@ describe("Adding new trades", () => {
     expect(response.statusCode).toEqual(200);
     expect(response.json()).toEqual(stockStats2);
   });
-  test("erases all trades", async () => {
+  test("erase all trades", async () => {
     expect.assertions(1);
     const response = await instance!.inject({
       method: "DELETE",

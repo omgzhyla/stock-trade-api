@@ -8,11 +8,7 @@ import adjCompiler from "@fastify/ajv-compiler";
 import { fastifyAwilixPlugin } from "@fastify/awilix";
 import { IRoutesProvider } from "./routes/tradeRoutes";
 import { errorHandler } from "./errors";
-import schema from "./repositories/schema.json";
-
-// type _AddTradeRequest = FastifyRequest<{
-//   Body: TradePayload;
-// }>;
+import schema from "./repositories/schema";
 
 export class Server {
   readonly instance: FastifyInstance;

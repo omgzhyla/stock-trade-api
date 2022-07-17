@@ -12,10 +12,6 @@ export type TradePayloadDTO = Omit<TradeDTO, "user_id" | "timestamp"> & {
 export type TradeResponseDTO = TradePayloadDTO;
 
 export type StockPricesMinMaxDTO = [number, number];
-//   highest: number;
-//   lowest: number;
-//   symbol: string;
-// };
 
 export type MarginalStockPricesResponseDTO = {
   highest: TradeDTO["price"];
@@ -89,9 +85,6 @@ export class TradeService implements ITradeService {
       TradeResponseMapper(tradeWithUser)
     );
   }
-  // async get(id: number): Promise<TradeDTO> {
-  //   return this.tradeRepository.get(id);
-  // }
   async getByUserId(userId: UserDTO["id"]): Promise<TradeResponseDTO[]> {
     const tradesWithUser = await this.tradeRepository.getByUserId(userId);
     return tradesWithUser.map((tradeWithUser) =>

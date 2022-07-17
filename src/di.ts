@@ -14,7 +14,6 @@ import { Server } from "./server";
 // eslint-disable-next-line no-unused-vars
 import { initDb } from "./db";
 import { Knex } from "knex";
-// import { Knex } from "knex";
 
 declare module "@fastify/awilix" {
   interface Cradle {
