@@ -1,7 +1,10 @@
-import { TradeDTO, ITradeRepository } from "../repositories/tradeRepository";
-import { IUserRepository, UserDTO } from "../repositories/userRepository";
-import { TradePayloadMapper } from "../mappers/tradePayloadMapper";
-import { TradeResponseMapper } from "../mappers/tradeResponseMapper";
+import {
+  TradeDTO,
+  UserDTO,
+  ITradeRepository,
+  IUserRepository,
+} from "../repositories";
+import { TradePayloadMapper, TradeResponseMapper } from "../mappers";
 import { Money, Currencies } from "ts-money";
 
 export type TradePayloadDTO = Omit<TradeDTO, "user_id" | "timestamp"> & {

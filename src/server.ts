@@ -3,27 +3,30 @@ import {
   FastifyInstance,
   FastifyReply,
   FastifyRequest,
+  RouteOptions,
 } from "fastify";
 import adjCompiler from "@fastify/ajv-compiler";
 import { fastifyAwilixPlugin } from "@fastify/awilix";
-import { IRoutesProvider } from "./routes/tradeRoutes";
+import { IRoutesProvider } from "./routes";
 import { errorHandler } from "./errors";
 import schema from "./repositories/schema";
 
 export class Server {
   readonly instance: FastifyInstance;
   private config;
-  private tradeRoutes;
+  private routesOptions: RouteOptions[];
 
   constructor({
     config,
     tradeRoutes,
+    stockRoutes,
   }: {
     config: { port: number; logger: object };
     tradeRoutes: IRoutesProvider;
+    stockRoutes: IRoutesProvider;
   }) {
     this.config = config;
-    this.tradeRoutes = tradeRoutes;
+    this.routesOptions = [...tradeRoutes.get(), ...stockRoutes.get()];
     this.instance = fastify({
       logger: config.logger,
       schemaController: {
@@ -78,7 +81,7 @@ export class Server {
   }
 
   private async setupRoutes() {
-    for (const options of this.tradeRoutes.get()) {
+    for (const options of this.routesOptions) {
       const patchedOptions = {
         ...options,
         errorHandler: this.errorHandler.bind(this),

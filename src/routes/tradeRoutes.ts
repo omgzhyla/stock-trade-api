@@ -1,11 +1,6 @@
 import { RouteOptions } from "fastify";
-import { ITradeService, TradePayloadDTO } from "../services/tradeService";
-import { IUserService } from "../services/userService";
-import { MarginalStockPricesMapper } from "../mappers/marginalStockPricesMapper";
-
-export interface IRoutesProvider {
-  get(): Array<RouteOptions>;
-}
+import { ITradeService, TradePayloadDTO, IUserService } from "../services";
+import { IRoutesProvider } from ".";
 
 export class TradeRoutes implements IRoutesProvider {
   private tradeService: ITradeService;
@@ -26,8 +21,6 @@ export class TradeRoutes implements IRoutesProvider {
       this.eraseAllTradesRouteOptions(),
       this.getAllTradesRouteOptions(),
       this.getTradesByUserIdRouteOptions(),
-      this.getMarginalStockPricesRouteOptions(),
-      this.getStockStatsRouteOptions(),
     ];
   }
   private addNewRouteOptions(): RouteOptions {
@@ -103,92 +96,6 @@ export class TradeRoutes implements IRoutesProvider {
               $ref: "api-schema#/definitions/trade",
             },
           },
-        },
-      },
-    };
-  }
-  private getMarginalStockPricesRouteOptions(): RouteOptions {
-    return {
-      method: "GET",
-      url: "/stocks/:stockSymbol/price",
-      handler: async (request, reply) => {
-        const { stockSymbol } = request.params as { stockSymbol: string };
-        const { start, end } = request.query as { start: string; end: string };
-        reply.code(200);
-        const prices = await this.tradeService.getMarginalStockPrices(
-          stockSymbol,
-          start,
-          end
-        );
-        return MarginalStockPricesMapper(stockSymbol, prices);
-      },
-      schema: {
-        params: {
-          type: "object",
-          properties: {
-            stockSymbol: {
-              type: "string",
-              minLength: 1,
-            },
-          },
-          required: ["stockSymbol"],
-        },
-        querystring: {
-          type: "object",
-          properties: {
-            start: {
-              type: "string",
-              format: "date",
-            },
-            end: {
-              type: "string",
-              format: "date",
-            },
-          },
-          required: ["start", "end"],
-        },
-        response: {
-          "2xx": {
-            type: "object",
-            properties: {
-              symbol: {
-                type: "string",
-              },
-              highest: {
-                type: "number",
-              },
-              lowest: {
-                type: "number",
-              },
-            },
-          },
-        },
-      },
-    };
-  }
-  private getStockStatsRouteOptions(): RouteOptions {
-    return {
-      method: "GET",
-      url: "/stocks/stats",
-      handler: async (request, reply) => {
-        const { start, end } = request.query as { start: string; end: string };
-        reply.code(200);
-        return this.tradeService.getStockStats(start, end);
-      },
-      schema: {
-        querystring: {
-          type: "object",
-          properties: {
-            start: {
-              type: "string",
-              format: "date",
-            },
-            end: {
-              type: "string",
-              format: "date",
-            },
-          },
-          required: ["start", "end"],
         },
       },
     };
