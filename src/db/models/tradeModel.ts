@@ -1,5 +1,5 @@
 import { Model } from "objection";
-import { UserModel } from "./userModel";
+import { UserModel } from ".";
 
 export class TradeModel extends Model {
   static get tableName() {
@@ -11,8 +11,8 @@ export class TradeModel extends Model {
       relation: Model.HasOneRelation,
       modelClass: UserModel,
       join: {
-        from: `${TradeModel.tableName}.user_id`,
-        to: `${UserModel.tableName}.id`,
+        from: "trades.user_id",
+        to: "users.id",
       },
     },
   };

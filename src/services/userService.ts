@@ -1,4 +1,4 @@
-import { IUserRepository, UserDTO } from "../repositories/userRepository";
+import { IUserRepository, UserDTO } from "../repositories";
 
 export interface IUserService {
   checkIfExists(_id: UserDTO["id"]): Promise<boolean>;

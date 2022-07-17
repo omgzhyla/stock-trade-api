@@ -1,6 +1,5 @@
-import { UserMapper } from "../mappers/userMapper";
-import { UserModel } from "../db/models/userModel";
-import { TradeModel } from "../db/models/tradeModel";
+import { UserMapper } from "../mappers";
+import { UserModel, TradeModel } from "../db/models";
 
 export type UserDTO = {
   id: number;

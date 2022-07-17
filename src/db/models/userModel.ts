@@ -1,17 +1,18 @@
 import { Model } from "objection";
-import { TradeModel } from "./tradeModel";
+import { TradeModel } from ".";
 
 export class UserModel extends Model {
   static get tableName() {
     return "users";
   }
+
   static relationMappings = {
     trades: {
       relation: Model.HasManyRelation,
       modelClass: TradeModel,
       join: {
-        from: `users.id`,
-        to: `trades.user_id`,
+        from: "users.id",
+        to: "trades.user_id",
       },
     },
   };

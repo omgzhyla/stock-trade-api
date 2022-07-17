@@ -1,8 +1,6 @@
-import { TradeModel } from "../db/models/tradeModel";
-import { TradeMapper } from "../mappers/tradeMapper";
-import { UserDTO } from "./userRepository";
-import { UserModel } from "../db/models/userModel";
-import { TradeWithUserMapper } from "../mappers/tradeWithUserMapper";
+import { TradeModel, UserModel } from "../db/models";
+import { TradeMapper, TradeWithUserMapper } from "../mappers";
+import { UserDTO } from ".";
 import { QueryBuilder } from "objection";
 
 export type TradeType = "buy" | "sell";
