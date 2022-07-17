@@ -6,6 +6,6 @@ export const TradeResponseMapper = (
   tradeWithUser: TradeWithUserDTO
 ): TradeResponseDTO => {
   const { timestamp, ...rest } = tradeWithUser;
-  const timestampEst = format(subHours(timestamp, 4), " yyyy-MM-dd HH:mm:ss");
+  const timestampEst = format(subHours(timestamp, 4), "yyyy-MM-dd HH:mm:ss");
   return { ...rest, timestamp: timestampEst };
 };

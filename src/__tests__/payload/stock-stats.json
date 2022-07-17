@@ -1,0 +1,18 @@
+[
+  {
+    "stock": "ABR",
+    "message": "There are no trades in the given date range"
+  },
+  {
+    "stock": "AC",
+    "fluctuations": 1,
+    "max_rise": 23.96,
+    "max_fall": 16.08
+  },
+  {
+    "stock": "ACC",
+    "fluctuations": 0,
+    "max_rise": 0.0,
+    "max_fall": 0.0
+  }
+]

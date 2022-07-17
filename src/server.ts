@@ -8,6 +8,7 @@ import adjCompiler from "@fastify/ajv-compiler";
 import { fastifyAwilixPlugin } from "@fastify/awilix";
 import { IRoutesProvider } from "./routes/tradeRoutes";
 import { errorHandler } from "./errors";
+import schema from "./repositories/schema.json";
 
 // type _AddTradeRequest = FastifyRequest<{
 //   Body: TradePayload;
@@ -37,35 +38,31 @@ export class Server {
       ajv: {
         customOptions: {
           formats: {
-            customDateTime: {
+            dateTime: {
               validate: (data: string): boolean => {
                 return (
                   /^\d{4}-(?:0|1)\d-\d{2} \d{2}:\d{2}:\d{2}$/.test(data) &&
                   !!Date.parse(data)
                 );
               },
-              compare: (_data1: string, _data2: string): number => {
-                return 0;
-              },
+              compare: (_a: string, _b: string): number => 0,
               async: false,
             },
-            customDate: {
+            date: {
               validate: (data: string): boolean => {
                 return (
                   /^\d{4}-(?:0|1)\d-\d{2}$/.test(data) && !!Date.parse(data)
                 );
               },
-              compare: (_data1: string, _data2: string): number => {
-                return 0;
-              },
+              compare: (_a: string, _b: string): number => 0,
               async: false,
             },
             price: {
               validate: (data: number): boolean => {
                 return /^\d{1,5}\.\d{2}$/.test(data.toString());
               },
-              compare: (data1: number, data2: number): number => {
-                return data1 == data2 ? 0 : data1 > data2 ? 1 : -1;
+              compare: (a: number, b: number): number => {
+                return a === b ? 0 : a > b ? 1 : -1;
               },
               async: false,
               type: "number",
@@ -81,6 +78,7 @@ export class Server {
       disposeOnClose: false,
       disposeOnResponse: false,
     });
+    await this.instance.addSchema(schema);
   }
 
   private async setupRoutes() {
@@ -98,7 +96,6 @@ export class Server {
     _request: FastifyRequest,
     reply: FastifyReply
   ) {
-    console.log("Error: ", error);
     const replyData = errorHandler(error);
     this.instance.log.error(
       !!replyData.logMessage ? replyData.logMessage : replyData.message

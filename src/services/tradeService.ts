@@ -2,6 +2,7 @@ import { TradeDTO, ITradeRepository } from "../repositories/tradeRepository";
 import { IUserRepository, UserDTO } from "../repositories/userRepository";
 import { TradePayloadMapper } from "../mappers/tradePayloadMapper";
 import { TradeResponseMapper } from "../mappers/tradeResponseMapper";
+import { Money, Currencies } from "ts-money";
 
 export type TradePayloadDTO = Omit<TradeDTO, "user_id" | "timestamp"> & {
   user: UserDTO;
@@ -149,46 +150,41 @@ export class TradeService implements ITradeService {
     max_fall: number;
   } {
     if (prices.length >= 3) {
-      let previousPrice = prices[0];
-      let max_fall = 0;
-      let max_rise = 0;
+      let maxFall = new Money(0, Currencies.USD);
+      let maxRise = new Money(0, Currencies.USD);
       const fluctuations = new Array<number>();
 
-      for (let i = 1; i < prices.length - 1; i++) {
-        const currentPrice = prices[i];
-        const nextPrice = prices[i + 1];
-        if (previousPrice < currentPrice && currentPrice > nextPrice) {
-          fluctuations.push(currentPrice);
+      for (let i = 1; i < prices.length; i++) {
+        const previousPrice = Money.fromDecimal(prices[i - 1], Currencies.USD);
+        const currentPrice = Money.fromDecimal(prices[i], Currencies.USD);
+        const nextPrice =
+          i < prices.length - 1
+            ? Money.fromDecimal(prices[i + 1], Currencies.USD)
+            : currentPrice;
+        const diff = currentPrice.subtract(previousPrice);
+        const absDiff = diff.isNegative() ? diff.multiply(-1) : diff;
+        if (diff.isPositive()) {
+          if (absDiff.greaterThan(maxRise)) {
+            maxRise = absDiff;
+          }
+          if (currentPrice.greaterThan(nextPrice)) {
+            fluctuations.push(currentPrice.toDecimal());
+          }
         }
-        if (previousPrice > currentPrice && currentPrice < nextPrice) {
-          fluctuations.push(currentPrice);
+        if (diff.isNegative()) {
+          if (absDiff.greaterThan(maxFall)) {
+            maxFall = absDiff;
+          }
+          if (currentPrice.lessThan(nextPrice)) {
+            fluctuations.push(currentPrice.toDecimal());
+          }
         }
-        previousPrice = currentPrice;
       }
 
-      if (fluctuations.length) {
-        const arr = [...fluctuations, prices[prices.length - 1]];
-        let prevPrice = prices[0];
-        for (const currentPrice of arr) {
-          const diff = currentPrice - prevPrice;
-          const rise = diff > 0;
-          const absDiff = Math.abs(diff);
-          if (rise) {
-            if (max_rise < absDiff) {
-              max_rise = absDiff;
-            }
-          } else {
-            if (max_fall < absDiff) {
-              max_fall = absDiff;
-            }
-          }
-          prevPrice = currentPrice;
-        }
-      }
       return {
         fluctuations: fluctuations.length,
-        max_fall,
-        max_rise,
+        max_fall: maxFall.toDecimal(),
+        max_rise: maxRise.toDecimal(),
       };
     } else {
       return {

@@ -10,7 +10,7 @@ export class UserService implements IUserService {
     this.userRepository = userRepository;
   }
   async checkIfExists(id: UserDTO["id"]) {
-    const user = await this.userRepository.get(id);
-    return !!user;
+    await this.userRepository.get(id);
+    return true;
   }
 }

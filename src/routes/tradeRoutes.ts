@@ -43,55 +43,7 @@ export class TradeRoutes implements IRoutesProvider {
       },
       schema: {
         body: {
-          type: "object",
-          properties: {
-            id: {
-              type: "integer",
-            },
-            type: {
-              type: "string",
-              enum: ["buy", "sell"],
-            },
-            user: {
-              type: "object",
-              properties: {
-                id: {
-                  type: "integer",
-                },
-                name: {
-                  type: "string",
-                },
-              },
-              required: ["id", "name"],
-            },
-            symbol: {
-              type: "string",
-            },
-            shares: {
-              type: "integer",
-              minimum: 10,
-              maximum: 30,
-            },
-            price: {
-              type: "number",
-              format: "price",
-              minimum: 130.42,
-              maximum: 195.65,
-            },
-            timestamp: {
-              type: "string",
-              format: "customDateTime",
-            },
-          },
-          required: [
-            "id",
-            "type",
-            "user",
-            "symbol",
-            "shares",
-            "price",
-            "timestamp",
-          ],
+          $ref: "api-schema#/definitions/trade",
         },
       },
     };
@@ -114,6 +66,16 @@ export class TradeRoutes implements IRoutesProvider {
         reply.code(200);
         return this.tradeService.getAll();
       },
+      schema: {
+        response: {
+          "2xx": {
+            type: "array",
+            items: {
+              $ref: "api-schema#/definitions/trade",
+            },
+          },
+        },
+      },
     };
   }
   private getTradesByUserIdRouteOptions(): RouteOptions {
@@ -133,6 +95,14 @@ export class TradeRoutes implements IRoutesProvider {
             userId: { type: "number" },
           },
           required: ["userId"],
+        },
+        response: {
+          "2xx": {
+            type: "array",
+            items: {
+              $ref: "api-schema#/definitions/trade",
+            },
+          },
         },
       },
     };
@@ -168,14 +138,30 @@ export class TradeRoutes implements IRoutesProvider {
           properties: {
             start: {
               type: "string",
-              format: "customDate",
+              format: "date",
             },
             end: {
               type: "string",
-              format: "customDate",
+              format: "date",
             },
           },
           required: ["start", "end"],
+        },
+        response: {
+          "2xx": {
+            type: "object",
+            properties: {
+              symbol: {
+                type: "string",
+              },
+              highest: {
+                type: "number",
+              },
+              lowest: {
+                type: "number",
+              },
+            },
+          },
         },
       },
     };
@@ -195,11 +181,11 @@ export class TradeRoutes implements IRoutesProvider {
           properties: {
             start: {
               type: "string",
-              format: "customDate",
+              format: "date",
             },
             end: {
               type: "string",
-              format: "customDate",
+              format: "date",
             },
           },
           required: ["start", "end"],
