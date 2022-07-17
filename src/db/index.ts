@@ -12,6 +12,7 @@ export const getKnexConfig = (config: any) => ({
   connection: config.dbUrl,
   migrations: {
     tableName: "knex_migrations",
+    directory: "./src/db/migrations",
   },
   debug: config.isDev,
   ...knexSnakeCaseMappers(),

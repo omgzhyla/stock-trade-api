@@ -1,6 +1,8 @@
 import { config } from "dotenv";
 
-config();
+config({
+  path: process.env.DOTENV_CONFIG_PATH,
+});
 
 const required: string[] = ["NODE_ENV", "PORT", "DATABASE_URL"];
 

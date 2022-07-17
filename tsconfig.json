@@ -12,7 +12,8 @@
     "moduleResolution": "node"
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "knexfile.ts",
   ],
   "exclude": [
 //    "src/__tests__/*"
